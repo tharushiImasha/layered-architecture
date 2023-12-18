@@ -7,6 +7,6 @@ public class QueryDaoImpl implements QueryDao {
 
     @Override
     public void customerOrderDetails(CustomDto customDto) {
-        
+
     }
 }
