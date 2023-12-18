@@ -72,7 +72,7 @@ public class ManageCustomersFormController {
         tblCustomers.getItems().clear();
         /*Get all customers*/
         try {
-            ArrayList<CustomerDTO> allCustomer = customerDao.getAllCustomers();
+            ArrayList<CustomerDTO> allCustomer = customerDao.getAll();
             for (CustomerDTO dto:allCustomer){
                 tblCustomers.getItems().add(new CustomerTM(
                         dto.getId(),
@@ -150,7 +150,7 @@ public class ManageCustomersFormController {
                     new Alert(Alert.AlertType.ERROR, id + " already exists").show();
                 }
 
-                boolean isSaved = customerDao.saveCustomer(new CustomerDTO(id, name, address));
+                boolean isSaved = customerDao.save(new CustomerDTO(id, name, address));
 
                 if (isSaved) {
                     tblCustomers.getItems().add(new CustomerTM(id, name, address));
@@ -170,7 +170,7 @@ public class ManageCustomersFormController {
                     new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
                 }
 
-                customerDao.updateCustomer(new CustomerDTO(id,name,address));
+                customerDao.update(new CustomerDTO(id,name,address));
 
             } catch (SQLException e) {
                 new Alert(Alert.AlertType.ERROR, "Failed to update the customer " + id + e.getMessage()).show();
@@ -189,7 +189,7 @@ public class ManageCustomersFormController {
 
 
     boolean existCustomer(String id) throws SQLException, ClassNotFoundException {
-        return customerDao.existCustomer(id);
+        return customerDao.exist(id);
     }
 
     public void btnDelete_OnAction(ActionEvent actionEvent) {
@@ -200,7 +200,7 @@ public class ManageCustomersFormController {
                 new Alert(Alert.AlertType.ERROR, "There is no such customer associated with the id " + id).show();
             }
 
-            customerDao.deleteCustomer(id);
+            customerDao.delete(id);
 
             tblCustomers.getItems().remove(tblCustomers.getSelectionModel().getSelectedItem());
             tblCustomers.getSelectionModel().clearSelection();

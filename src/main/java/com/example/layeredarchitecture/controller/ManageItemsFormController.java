@@ -75,7 +75,7 @@ public class ManageItemsFormController {
         tblItems.getItems().clear();
         try {
             /*Get all items*/
-            ArrayList<ItemDTO> allItems = itemDao.loadAll();
+            ArrayList<ItemDTO> allItems = itemDao.getAll();
 
             for (ItemDTO itemDTO : allItems){
                 tblItems.getItems().add(new ItemTM(
@@ -142,7 +142,7 @@ public class ManageItemsFormController {
                 new Alert(Alert.AlertType.ERROR, "There is no such item associated with the id " + code).show();
             }
 
-            itemDao.deleteItem(code);
+            itemDao.delete(code);
 
             tblItems.getItems().remove(tblItems.getSelectionModel().getSelectedItem());
             tblItems.getSelectionModel().clearSelection();
@@ -183,7 +183,7 @@ public class ManageItemsFormController {
                 }
                 //Save Item
 
-                boolean isSaved = itemDao.saveItem(new ItemDTO(code, description, unitPrice, qtyOnHand));
+                boolean isSaved = itemDao.save(new ItemDTO(code, description, unitPrice, qtyOnHand));
 
                 if (isSaved){
                     tblItems.getItems().add(new ItemTM(code, description, unitPrice, qtyOnHand));
@@ -202,7 +202,7 @@ public class ManageItemsFormController {
                 }
                 /*Update Item*/
 
-                itemDao.updateItem(new ItemDTO(code, description, unitPrice, qtyOnHand));
+                itemDao.update(new ItemDTO(code, description, unitPrice, qtyOnHand));
 
                 ItemTM selectedItem = tblItems.getSelectionModel().getSelectedItem();
                 selectedItem.setDescription(description);
@@ -221,12 +221,12 @@ public class ManageItemsFormController {
 
 
     private boolean existItem(String code) throws SQLException, ClassNotFoundException {
-        return itemDao.existItem(code);
+        return itemDao.exist(code);
     }
 
     private String generateNewId() {
         try {
-            return itemDao.genarateId();
+            return itemDao.generateId();
 
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, e.getMessage()).show();
