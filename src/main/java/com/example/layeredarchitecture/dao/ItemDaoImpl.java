@@ -42,13 +42,14 @@ public class ItemDaoImpl implements ItemDao {
     @Override
     public boolean update(ItemDTO itemDTO) throws SQLException, ClassNotFoundException {
 
-        return SqlUtil.execute("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?", itemDTO.getDescription(), itemDTO.getUnitPrice(), itemDTO.getQtyOnHand(), itemDTO.getCode());
+         return SqlUtil.execute("UPDATE Item SET description=?, unitPrice=?, qtyOnHand=? WHERE code=?", itemDTO.getDescription(), itemDTO.getUnitPrice(), itemDTO.getQtyOnHand(), itemDTO.getCode());
+
     }
 
     @Override
     public boolean exist(String code) throws SQLException, ClassNotFoundException {
-
-        return SqlUtil.execute("SELECT code FROM Item WHERE code=?", code);
+        ResultSet rst = SqlUtil.execute("SELECT code FROM Item WHERE code=?", code);
+        return rst.next();
     }
 
     @Override
