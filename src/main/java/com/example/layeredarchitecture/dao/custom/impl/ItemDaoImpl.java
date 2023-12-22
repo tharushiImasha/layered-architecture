@@ -23,6 +23,7 @@ public class ItemDaoImpl implements ItemDao {
                     rst.getBigDecimal("unitPrice"),
                     rst.getInt("qtyOnHand")
             );
+            allItems.add(itemDTO);
         }
         return allItems;
 
@@ -68,15 +69,19 @@ public class ItemDaoImpl implements ItemDao {
 
     @Override
     public ItemDTO find(String code) throws SQLException, ClassNotFoundException {
-//        Connection connection = DBConnection.getDbConnection().getConnection();
-//        PreparedStatement pstm = connection.prepareStatement("SELECT * FROM Item WHERE code=?");
-//        pstm.setString(1, code+"");
-//        ResultSet rst = pstm.executeQuery();
-//        rst.next();
-//        return new ItemDTO(code, rst.getString("description"), rst.getBigDecimal("unitPrice"), rst.getInt("qtyOnHand"));
 
-        return SqlUtil.execute("SELECT * FROM Item WHERE code=?", code);
+       ResultSet rst = SqlUtil.execute("SELECT * FROM Item WHERE code=?", code);
+        rst.next();
+        return new ItemDTO(code, rst.getString("description"), rst.getBigDecimal("unitPrice"), rst.getInt("qtyOnHand"));
 
+//        ResultSet rst =  SqlUtil.execute("SELECT * FROM Item WHERE code=?", code);
+//        while (rst.next()){
+//            ItemDTO itemDTO = new ItemDTO( rst.getString("code"),
+//                    rst.getString("description"),
+//                    rst.getBigDecimal("unitPrice"),
+//                    rst.getInt("qtyOnHand")
+//            );
+//        }
     }
 
 }

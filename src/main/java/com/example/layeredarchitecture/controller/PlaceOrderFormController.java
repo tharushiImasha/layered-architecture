@@ -1,15 +1,10 @@
 package com.example.layeredarchitecture.controller;
 
 import com.example.layeredarchitecture.dao.custom.CustomerDao;
-import com.example.layeredarchitecture.dao.custom.impl.CustomerDaoImpl;
-import com.example.layeredarchitecture.dao.custom.impl.ItemDaoImpl;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDaoImpl;
-import com.example.layeredarchitecture.dao.custom.impl.OrderDetailDaoImpl;
+import com.example.layeredarchitecture.dao.custom.QueryDao;
+import com.example.layeredarchitecture.dao.custom.impl.*;
 import com.example.layeredarchitecture.db.DBConnection;
-import com.example.layeredarchitecture.model.CustomerDTO;
-import com.example.layeredarchitecture.model.ItemDTO;
-import com.example.layeredarchitecture.model.OrderDTO;
-import com.example.layeredarchitecture.model.OrderDetailDTO;
+import com.example.layeredarchitecture.model.*;
 import com.example.layeredarchitecture.view.tdm.OrderDetailTM;
 import com.jfoenix.controls.JFXButton;
 import com.jfoenix.controls.JFXComboBox;
@@ -84,6 +79,7 @@ public class PlaceOrderFormController {
         });
 
         orderId = generateNewOrderId();
+
         lblId.setText("Order ID: " + orderId);
         lblDate.setText(LocalDate.now().toString());
         btnPlaceOrder.setDisable(true);
@@ -194,7 +190,7 @@ public class PlaceOrderFormController {
 
     public String generateNewOrderId() {
         try {
-            orderDao.generateNewId();
+            orderDao.generateId();
         } catch (SQLException e) {
             new Alert(Alert.AlertType.ERROR, "Failed to generate a new order id").show();
         } catch (ClassNotFoundException e) {
@@ -299,7 +295,7 @@ public class PlaceOrderFormController {
     public void txtQty_OnAction(ActionEvent actionEvent) {
     }
 
-    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) {
+    public void btnPlaceOrder_OnAction(ActionEvent actionEvent) throws SQLException, ClassNotFoundException {
         boolean b = saveOrder(orderId, LocalDate.now(), cmbCustomerId.getValue(),
                 tblOrderDetails.getItems().stream().map(tm -> new OrderDetailDTO(orderId,tm.getCode(), tm.getQty(), tm.getUnitPrice())).collect(Collectors.toList()));
 
@@ -316,6 +312,9 @@ public class PlaceOrderFormController {
         tblOrderDetails.getItems().clear();
         txtQty.clear();
         calculateTotal();
+
+        QueryDaoImpl queryDao = new QueryDaoImpl();
+        queryDao.customerOrderDetails();
     }
 
     public boolean saveOrder(String orderId, LocalDate orderDate, String customerId, List<OrderDetailDTO> orderDetails) {
@@ -331,7 +330,7 @@ public class PlaceOrderFormController {
 
             connection.setAutoCommit(false);
 
-            boolean isSaved = orderDao.saveOrder(new OrderDTO(orderId, orderDate, customerId, null, null));
+            boolean isSaved = orderDao.save(new OrderDTO(orderId, orderDate, customerId, null, null));
 
             if (!isSaved) {
                 connection.rollback();
@@ -341,7 +340,7 @@ public class PlaceOrderFormController {
 
 
             for (OrderDetailDTO detail : orderDetails) {
-               boolean isOrderDetailSave = orderDetailDao.savaOrderDetail(detail);
+               boolean isOrderDetailSave = orderDetailDao.save(detail);
 
                 if (!isOrderDetailSave) {
                     connection.rollback();
